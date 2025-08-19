@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity Billing System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .bill-output {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Electricity Billing System</h1>
+    <form id="billingForm">
+      <label for="customerName">Customer Name:</label>
+      <input type="text" id="customerName" required>
+
+      <label for="units">Units Consumed:</label>
+      <input type="number" id="units" required>
+
+      <label for="type">Connection Type:</label>
+      <select id="type" required>
+        <option value="domestic">Domestic</option>
+        <option value="commercial">Commercial</option>
+      </select>
+
+      <button type="submit">Generate Bill</button>
+    </form>
+
+    <div id="output" class="bill-output" style="display:none;"></div>
+  </div>
+
+  <script>
+    function calculateBill(units, type) {
+      let amount = 0;
+
+      if (type === "domestic") {
+        if (units <= 100) amount = units * 1;
+        else if (units <= 200) amount = 100*1 + (units-100)*2.5;
+        else if (units <= 500) amount = 100*1 + 100*2.5 + (units-200)*4;
+        else amount = 100*1 + 100*2.5 + 300*4 + (units-500)*6;
+      } else { // commercial
+        if (units <= 100) amount = units * 2;
+        else if (units <= 200) amount = 100*2 + (units-100)*4.5;
+        else if (units <= 500) amount = 100*2 + 100*4.5 + (units-200)*6;
+        else amount = 100*2 + 100*4.5 + 300*6 + (units-500)*7;
+      }
+
+      return amount;
+    }
+
+    document.getElementById("billingForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("customerName").value;
+      const units = parseInt(document.getElementById("units").value);
+      const type = document.getElementById("type").value;
+
+      const bill = calculateBill(units, type);
+
+      const outputDiv = document.getElementById("output");
+      outputDiv.style.display = "block";
+      outputDiv.innerHTML = `
+        <strong>Bill Generated:</strong><br>
+        Customer Name: ${name}<br>
+        Units Consumed: ${units}<br>
+        Connection Type: ${type.charAt(0).toUpperCase() + type.slice(1)}<br>
+        <strong>Total Bill: ₹${bill.toFixed(2)}</strong>
+      `;
+    });
+  </script>
+</body>
+</html>
