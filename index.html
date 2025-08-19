@@ -3,145 +3,221 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>C++ to JS Converter</title>
+  <title>Electricity Bill Calculator</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
       color: #fff;
-      margin: 0;
-      padding: 0;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      min-height: 100vh;
-    }
-
-    h1 {
-      margin: 20px;
-      font-size: 2rem;
+      height: 100vh;
+      margin: 0;
     }
 
     .container {
-      background: #ffffff11;
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 20px;
-      width: 90%;
-      max-width: 1000px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0px 8px 25px rgba(0,0,0,0.2);
+      width: 420px;
+      max-height: 95vh;
+      overflow-y: auto;
     }
 
-    textarea {
-      width: 100%;
-      height: 250px;
-      resize: none;
-      border-radius: 12px;
-      border: none;
-      padding: 12px;
-      font-family: monospace;
+    h1 {
+      margin-bottom: 20px;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 5px;
       font-size: 14px;
-      background: #0d1117;
-      color: #fff;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
       outline: none;
-      box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
-    }
-
-    .panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .label {
-      margin-bottom: 8px;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    .buttons {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
+      font-size: 14px;
     }
 
     button {
-      padding: 10px 16px;
-      border-radius: 8px;
+      margin-top: 20px;
+      background: #ff9800;
+      color: white;
+      padding: 12px;
       border: none;
-      font-weight: bold;
+      border-radius: 10px;
+      font-size: 16px;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: 0.3s;
+      width: 100%;
     }
 
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      background: #e68900;
+      transform: scale(1.05);
     }
 
-    .convert-btn { background: #00c853; color: #fff; }
-    .copy-btn { background: #2962ff; color: #fff; }
-    .clear-btn { background: #d50000; color: #fff; }
+    .output {
+      margin-top: 25px;
+      text-align: left;
+      background: rgba(0,0,0,0.2);
+      padding: 15px;
+      border-radius: 12px;
+    }
+
+    .output h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding-bottom: 5px;
+    }
+
+    .output p {
+      margin: 6px 0;
+      font-size: 15px;
+    }
   </style>
 </head>
 <body>
-  <h1>⚡ C++ → JavaScript Converter</h1>
-
   <div class="container">
-    <div class="panel">
-      <div class="label">C++ Code Input</div>
-      <textarea id="cppInput" placeholder="// Paste your C++ code here"></textarea>
-      <div class="buttons">
-        <button class="convert-btn" onclick="convertCode()">Convert</button>
-        <button class="clear-btn" onclick="clearInput()">Clear</button>
-      </div>
-    </div>
+    <h1>⚡ Electricity Bill Calculator ⚡</h1>
 
-    <div class="panel">
-      <div class="label">JavaScript Output</div>
-      <textarea id="jsOutput" placeholder="// JS code will appear here" readonly></textarea>
-      <div class="buttons">
-        <button class="copy-btn" onclick="copyOutput()">Copy</button>
-      </div>
+    <label>Units Consumed:</label>
+    <input type="number" id="units" placeholder="e.g. 350">
+
+    <label>Connected Load (kW):</label>
+    <input type="number" id="load" placeholder="e.g. 8">
+
+    <label>Previous Month Energy Charge:</label>
+    <input type="number" id="prevEC" placeholder="e.g. 500">
+
+    <label>FPPCA Rate (%):</label>
+    <input type="number" id="fppcaRate" placeholder="e.g. 10">
+
+    <label>Duty Rate (%):</label>
+    <input type="number" id="dutyRate" placeholder="e.g. 5">
+
+    <label>Cess Rate (Rs/unit):</label>
+    <input type="number" id="cessRate" placeholder="e.g. 1.5">
+
+    <button onclick="calculateBill()">Calculate Bill</button>
+
+    <div id="result" class="output" style="display: none;">
+      <h3>--- Bill Breakdown ---</h3>
+      <p><b>Energy Charge (EC):</b> ₹<span id="outEC"></span></p>
+      <p><b>Fixed Charge (FC):</b> ₹<span id="outFC"></span></p>
+      <p><b>FPPCA:</b> ₹<span id="outFPPCA"></span></p>
+      <p><b>Duty:</b> ₹<span id="outDuty"></span></p>
+      <p><b>Cess:</b> ₹<span id="outCess"></span></p>
+      <p><b>Total Before Rebates:</b> ₹<span id="outTotal"></span></p>
+      <h3>--- Rebates ---</h3>
+      <p><b>SR Rebate:</b> ₹<span id="outSR"></span></p>
+      <p><b>BPL Rebate:</b> ₹<span id="outBPL"></span></p>
+      <p><b>Total Rebate:</b> ₹<span id="outRebate"></span></p>
+      <h3>--- Final Bill ---</h3>
+      <p><b>Payable Amount:</b> ₹<span id="outFinal"></span></p>
     </div>
   </div>
 
   <script>
-    function convertCode() {
-      const cppCode = document.getElementById("cppInput").value;
+    // ----- Core Logic from C++ Converted to JS -----
+    function calculateEC(units) {
+      let ec = 0;
+      if (units > 600) { ec += (units - 600) * 8.1; units = 600; }
+      if (units > 400) { ec += (units - 400) * 6.5; units = 400; }
+      if (units > 200) { ec += (units - 200) * 5.5; units = 200; }
+      if (units > 100) { ec += (units - 100) * 4.1; units = 100; }
+      if (units > 0) { ec += units * 3.9; }
+      return ec;
+    }
 
-      if (!cppCode.trim()) {
-        alert("Please paste some C++ code!");
+    function calculateFC(load) {
+      if (load <= 5) return 20;
+      else if (load <= 10) return 30;
+      else return 40;
+    }
+
+    function calculateFPPCA(prevEC, ratePercent) {
+      return prevEC * (ratePercent / 100.0);
+    }
+
+    function calculateDuty(ec, fppca, ratePercent) {
+      return (ec + fppca) * (ratePercent / 100.0);
+    }
+
+    function calculateCess(units, ratePerUnit) {
+      return units * ratePerUnit;
+    }
+
+    function calculateSRRebate(units, ec, fc, fppca) {
+      let rebateUnits = Math.min(units, 400);
+      let rebateEC = calculateEC(rebateUnits) * 0.5;
+      let rebateFPPCA = fppca * (rebateUnits / units) * 0.5;
+      let rebateFC = fc * 0.5;
+      return rebateEC + rebateFPPCA + rebateFC;
+    }
+
+    function calculateBPLRebate(units, fppcaRate, dutyRate) {
+      let rebateUnits = Math.min(units, 30);
+      let rebateEC = rebateUnits * 3.9;
+      let rebateFPPCA = rebateEC * (fppcaRate / 100.0);
+      let rebateDuty = (rebateEC + rebateFPPCA) * (dutyRate / 100.0);
+      return rebateEC + rebateFPPCA + rebateDuty;
+    }
+
+    function calculateBill() {
+      const units = parseFloat(document.getElementById("units").value);
+      const load = parseFloat(document.getElementById("load").value);
+      const prevEC = parseFloat(document.getElementById("prevEC").value);
+      const fppcaRate = parseFloat(document.getElementById("fppcaRate").value);
+      const dutyRate = parseFloat(document.getElementById("dutyRate").value);
+      const cessRate = parseFloat(document.getElementById("cessRate").value);
+
+      if ([units, load, prevEC, fppcaRate, dutyRate, cessRate].some(isNaN)) {
+        alert("⚠️ Please enter all inputs correctly!");
         return;
       }
 
-      // ⚠️ Placeholder Conversion Logic (can be extended with regex/AI rules)
-      let jsCode = cppCode
-        .replace(/#include\s*<.*>/g, "// [header removed]")
-        .replace(/std::cout\s*<</g, "console.log(")
-        .replace(/<<\s*std::endl/g, ")")
-        .replace(/int\s+main\s*\(\s*\)/g, "function main()")
-        .replace(/{/g, "{\n")
-        .replace(/return\s+\d+;/g, "// return removed");
+      const ec = calculateEC(units);
+      const fc = calculateFC(load);
+      const fppca = calculateFPPCA(prevEC, fppcaRate);
+      const duty = calculateDuty(ec, fppca, dutyRate);
+      const cess = calculateCess(units, cessRate);
 
-      document.getElementById("jsOutput").value = jsCode;
-    }
+      const totalBill = ec + fc + fppca + duty + cess;
 
-    function copyOutput() {
-      const output = document.getElementById("jsOutput");
-      output.select();
-      document.execCommand("copy");
-      alert("✅ JS Code copied to clipboard!");
-    }
+      const srRebate = calculateSRRebate(units, ec, fc, fppca);
+      const bplRebate = calculateBPLRebate(units, fppcaRate, dutyRate);
+      const totalRebate = srRebate + bplRebate;
 
-    function clearInput() {
-      document.getElementById("cppInput").value = "";
-      document.getElementById("jsOutput").value = "";
+      const finalBill = totalBill - totalRebate;
+
+      // Update UI
+      document.getElementById("outEC").textContent = ec.toFixed(2);
+      document.getElementById("outFC").textContent = fc.toFixed(2);
+      document.getElementById("outFPPCA").textContent = fppca.toFixed(2);
+      document.getElementById("outDuty").textContent = duty.toFixed(2);
+      document.getElementById("outCess").textContent = cess.toFixed(2);
+      document.getElementById("outTotal").textContent = totalBill.toFixed(2);
+
+      document.getElementById("outSR").textContent = srRebate.toFixed(2);
+      document.getElementById("outBPL").textContent = bplRebate.toFixed(2);
+      document.getElementById("outRebate").textContent = totalRebate.toFixed(2);
+
+      document.getElementById("outFinal").textContent = finalBill.toFixed(2);
+
+      document.getElementById("result").style.display = "block";
     }
   </script>
 </body>
 </html>
-
