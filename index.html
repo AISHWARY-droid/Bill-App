@@ -3,129 +3,145 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Electricity Billing System</title>
+  <title>C++ to JS Converter</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: #fff;
       margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      max-width: 400px;
-      width: 100%;
-    }
+
     h1 {
-      text-align: center;
-      font-size: 1.8em;
-      color: #333;
-      margin-bottom: 20px;
+      margin: 20px;
+      font-size: 2rem;
     }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 10px;
+
+    .container {
+      background: #ffffff11;
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      width: 90%;
+      max-width: 1000px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-    input, select {
+
+    textarea {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: #4CAF50;
-      color: white;
+      height: 250px;
+      resize: none;
+      border-radius: 12px;
       border: none;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 14px;
+      background: #0d1117;
+      color: #fff;
+      outline: none;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+    }
+
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .label {
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .buttons {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
       border-radius: 8px;
-      font-size: 1em;
+      border: none;
+      font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s;
     }
+
     button:hover {
-      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
-    .bill-output {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
-      background: #f8f9fa;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-      font-size: 1.1em;
-    }
+
+    .convert-btn { background: #00c853; color: #fff; }
+    .copy-btn { background: #2962ff; color: #fff; }
+    .clear-btn { background: #d50000; color: #fff; }
   </style>
 </head>
 <body>
+  <h1>⚡ C++ → JavaScript Converter</h1>
+
   <div class="container">
-    <h1>Electricity Billing System</h1>
-    <form id="billingForm">
-      <label for="customerName">Customer Name:</label>
-      <input type="text" id="customerName" required>
+    <div class="panel">
+      <div class="label">C++ Code Input</div>
+      <textarea id="cppInput" placeholder="// Paste your C++ code here"></textarea>
+      <div class="buttons">
+        <button class="convert-btn" onclick="convertCode()">Convert</button>
+        <button class="clear-btn" onclick="clearInput()">Clear</button>
+      </div>
+    </div>
 
-      <label for="units">Units Consumed:</label>
-      <input type="number" id="units" required>
-
-      <label for="type">Connection Type:</label>
-      <select id="type" required>
-        <option value="domestic">Domestic</option>
-        <option value="commercial">Commercial</option>
-      </select>
-
-      <button type="submit">Generate Bill</button>
-    </form>
-
-    <div id="output" class="bill-output" style="display:none;"></div>
+    <div class="panel">
+      <div class="label">JavaScript Output</div>
+      <textarea id="jsOutput" placeholder="// JS code will appear here" readonly></textarea>
+      <div class="buttons">
+        <button class="copy-btn" onclick="copyOutput()">Copy</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    function calculateBill(units, type) {
-      let amount = 0;
+    function convertCode() {
+      const cppCode = document.getElementById("cppInput").value;
 
-      if (type === "domestic") {
-        if (units <= 100) amount = units * 1;
-        else if (units <= 200) amount = 100*1 + (units-100)*2.5;
-        else if (units <= 500) amount = 100*1 + 100*2.5 + (units-200)*4;
-        else amount = 100*1 + 100*2.5 + 300*4 + (units-500)*6;
-      } else { // commercial
-        if (units <= 100) amount = units * 2;
-        else if (units <= 200) amount = 100*2 + (units-100)*4.5;
-        else if (units <= 500) amount = 100*2 + 100*4.5 + (units-200)*6;
-        else amount = 100*2 + 100*4.5 + 300*6 + (units-500)*7;
+      if (!cppCode.trim()) {
+        alert("Please paste some C++ code!");
+        return;
       }
 
-      return amount;
+      // ⚠️ Placeholder Conversion Logic (can be extended with regex/AI rules)
+      let jsCode = cppCode
+        .replace(/#include\s*<.*>/g, "// [header removed]")
+        .replace(/std::cout\s*<</g, "console.log(")
+        .replace(/<<\s*std::endl/g, ")")
+        .replace(/int\s+main\s*\(\s*\)/g, "function main()")
+        .replace(/{/g, "{\n")
+        .replace(/return\s+\d+;/g, "// return removed");
+
+      document.getElementById("jsOutput").value = jsCode;
     }
 
-    document.getElementById("billingForm").addEventListener("submit", function(event) {
-      event.preventDefault();
+    function copyOutput() {
+      const output = document.getElementById("jsOutput");
+      output.select();
+      document.execCommand("copy");
+      alert("✅ JS Code copied to clipboard!");
+    }
 
-      const name = document.getElementById("customerName").value;
-      const units = parseInt(document.getElementById("units").value);
-      const type = document.getElementById("type").value;
-
-      const bill = calculateBill(units, type);
-
-      const outputDiv = document.getElementById("output");
-      outputDiv.style.display = "block";
-      outputDiv.innerHTML = `
-        <strong>Bill Generated:</strong><br>
-        Customer Name: ${name}<br>
-        Units Consumed: ${units}<br>
-        Connection Type: ${type.charAt(0).toUpperCase() + type.slice(1)}<br>
-        <strong>Total Bill: ₹${bill.toFixed(2)}</strong>
-      `;
-    });
+    function clearInput() {
+      document.getElementById("cppInput").value = "";
+      document.getElementById("jsOutput").value = "";
+    }
   </script>
 </body>
 </html>
+
